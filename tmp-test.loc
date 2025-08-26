@@ -1,0 +1,25 @@
+module tmp-test (*)
+
+import tmp-root-py (Int, Str, Tuple2, eq, fst)
+
+source Py from "tmp-test.py" ("testEqual", "printMsg", "printResult")
+
+testEqual
+    :: Str        -- description of the test
+    -> Bool       -- the test result (e.g., `1 == 1`)
+    -> (Int, Int) -- total number of tests and total fails
+    -> (Int, Int)
+
+printMsg a :: Str -> a -> a
+
+printResult :: (Int, Int) -> (Int, Int)
+
+passed :: (Int, Int) -> Bool
+passed t = eq 0 (fst t)
+
+testGroup
+    :: Str
+    -> ((Int, Int) -> (Int, Int))
+    -> (Int, Int)
+    -> (Int, Int)
+testGroup msg tests = tests . printMsg msg

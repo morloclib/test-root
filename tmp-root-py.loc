@@ -1,0 +1,11 @@
+module tmp-root-py (*)
+
+import tmp-root
+
+source Py from "root.py"
+    ( "morloc_fst" as fst
+    , "morloc_ifelse" as ifelse
+    )
+
+instance Eq Int where
+    source Py from "root.py" ("morloc_eq" as eq)
