@@ -26,8 +26,8 @@ def printMsg(msg, x):
     return x
 
 def printResult(x):
-    if(x[0] == 0):
-        print(good(f"{x[1]!s}/{x[0]!s} tests failed"))
+    if(x[1] == 0):
+        print(good(f"All {x[0]!s} tests pass"))
     else:
         print(bad(f"{x[1]!s}/{x[0]!s} tests failed"))
     return x

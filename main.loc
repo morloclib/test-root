@@ -7,18 +7,70 @@ test :: (Int, Int) -> Bool
 test =
   ( passed
   . printResult
-  . testGroup "group2" testGroup2
-  . testGroup "group1" testGroup1
+  . testGroup "Combinators" testCombinators
+  . testGroup "Tuples" testTuples
+  . testGroup "Bools" testBools
+  . testGroup "Comparisons" testComparisons
   )
 
-testGroup1 :: (Int, Int) -> (Int, Int)
-testGroup1 prior =  
-    ( testEqual "Test Equality" (eq 1 1)
-    . testEqual "Test Equality" (eq 2 1)
-    ) prior
+testCombinators :: (Int, Int) -> (Int, Int)
+testCombinators =  
+  ( testEqual "id" (eq (id 1) 1)
+  . testEqual "seq" (eq (seq 1 2) 2)
+  . testEqual "const" (eq (const 1 2) 1)
+  . testEqual "flip" (eq ((flip const) 1 2) (seq 1 2))
+  . testEqual "starling 1" (eq (starling const (const 42) (const 49) 99) 42)
+  . testEqual "starling 2" (eq (starling const (seq 42) (const 49) 99) 99)
+  )
 
-testGroup2 :: (Int, Int) -> (Int, Int)
-testGroup2 prior =  
-    ( testEqual "Test Equality 2" (eq 1 1)
-    . testEqual "Test Equality 2" (eq 2 1)
-    ) prior
+testTuples :: (Int, Int) -> (Int, Int)
+testTuples =  
+  ( testEqual "fst and snd" (eq (starling const fst snd (1,2)) 1)
+  . testEqual "toFst" (eq (toFst snd (1,2)) (2,(1,2)))
+  . testEqual "toSnd" (eq (toSnd fst (1,2)) ((1,2),1))
+  . testEqual "fst3, snd3, thr3" (eq ((\t -> (snd3 t, thr3 t, fst3 t)) (3,1,2)) (1,2,3))
+  . testEqual "curry" (eq ((curry fst) 1 2) 1)
+  . testEqual "curry3" (eq ((curry3 fst3) 1 2 3) 1)
+  . testEqual "uncurry" (eq ((uncurry const) (1,2)) 1)
+  )
+
+testBools :: (Int, Int) -> (Int, Int)
+testBools =
+  ( testEqual "not True" (eq (not True) False)
+  . testEqual "not False" (eq (not False) True)
+  . testEqual "and True True" (eq (and True True) True)
+  . testEqual "and True False" (eq (and True  False) False)
+  . testEqual "or True  True"  (eq (or True  True)  True)
+  . testEqual "or True  False" (eq (or True  False) True)
+  . testEqual "or False True"  (eq (or False True)  True)
+  . testEqual "or False False" (eq (or False False) False)
+  . testEqual "xor True  True"  (eq (xor True  True)  False)
+  . testEqual "xor True  False" (eq (xor True  False) True)
+  . testEqual "xor False True"  (eq (xor False True)  True)
+  . testEqual "xor False False" (eq (xor False False) False)
+  . testEqual "nand True  True"  (eq (nand True  True)  False)
+  . testEqual "nand True  False" (eq (nand True  False) True)
+  . testEqual "nand False True"  (eq (nand False True)  True)
+  . testEqual "nand False False" (eq (nand False False) True)
+  )
+
+testComparisons :: (Int, Int) -> (Int, Int)
+testComparisons =
+  ( testEqual "le 1 2" (eq (le 1 2) True)
+  . testEqual "le 1 1" (eq (le 1 1) True)
+  . testEqual "le 2 1" (eq (le 2 1) False)
+  . testEqual "lt 1 2" (eq (lt 1 2) True)
+  . testEqual "lt 1 1" (eq (lt 1 1) False)
+  . testEqual "lt 2 1" (eq (lt 2 1) False)
+  . testEqual "ge 1 2" (eq (ge 1 2) False)
+  . testEqual "ge 1 1" (eq (ge 1 1) True)
+  . testEqual "ge 2 1" (eq (ge 2 1) True)
+  . testEqual "gt 1 2" (eq (gt 1 2) False)
+  . testEqual "gt 1 1" (eq (gt 1 1) False)
+  . testEqual "gt 2 1" (eq (gt 2 1) True)
+  . testEqual "ne 1 2" (eq (ne 1 2) True)
+  . testEqual "ne 1 1" (eq (ne 1 1) False)
+  . testEqual "ne 2 1" (eq (ne 2 1) True)
+  -- . testEqual "lesser 1 2" (eq (lesser 1 2) 1)
+  . testEqual "greater 1 2" (eq (greater 1 2) 2)
+  )
