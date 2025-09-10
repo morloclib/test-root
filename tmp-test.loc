@@ -4,9 +4,10 @@ import tmp-root-py (Int, Str, Tuple2, eq, fst)
 
 source Py from "tmp-test.py" ("testEqual", "printMsg", "printResult")
 
-testEqual
+testEqual a
     :: Str        -- description of the test
-    -> Bool       -- the test result (e.g., `1 == 1`)
+    -> a
+    -> a
     -> (Int, Int) -- total number of tests and total fails
     -> (Int, Int)
 

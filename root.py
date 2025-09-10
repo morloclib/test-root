@@ -41,3 +41,39 @@ def morloc_or(x, y):
 
 def morloc_not(x):
     return (not x)
+
+# nothing a :: Maybe a
+morloc_nothing = None
+
+# just a :: a -> Maybe a
+def morloc_just(x):
+    return x
+
+# fromJust a :: Maybe a -> a -- unsafe, undefined for Nothing
+def morloc_fromJust(x):
+    if x is not None:
+        return x
+    else:
+        raise ValueError("in fromJust, value must not be None")
+
+#  isNothing a :: Maybe a -> Bool
+def morloc_isNothing(x):
+    return x is None
+
+def morloc_add(x, y):
+    return x + y
+
+#  fold f a b :: (b -> a -> b) -> b -> f a -> b
+def morloc_fold(fbab, b, fa):
+    for x in fa:
+        b = fbab(b, x)
+    return b
+
+def morloc_map_list(f, xs):
+    return list(map(f, xs))
+
+def morloc_at(i, xs):
+    return xs[i]
+
+def morloc_slice(i, j, xs):
+    return xs[i:j]

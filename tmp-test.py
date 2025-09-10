@@ -12,9 +12,9 @@ def bad(msg):
 def info(msg):
     return f"{BLUE}{msg}{RESET}"
 
-def testEqual(msg, cond, results):
+def testEqual(msg, x, y, results):
     (ntests, nfails) = results
-    if(cond):
+    if(x == y):
         print(f"  {msg} ... {good('PASS')}")
         return (ntests + 1, nfails)
     else:
@@ -31,6 +31,3 @@ def printResult(x):
     else:
         print(bad(f"{x[1]!s}/{x[0]!s} tests failed"))
     return x
-
-def eq(x, y):
-    return x == y

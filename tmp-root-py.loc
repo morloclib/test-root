@@ -14,10 +14,43 @@ source Py from "root.py"
     , "morloc_not" as not
     , "morloc_and" as and
     , "morloc_or" as or
+    , "morloc_nothing" as nothing
+    , "morloc_just" as just
+    , "morloc_fromJust" as fromJust
+    , "morloc_isNothing" as isNothing
     )
 
+-- This approach of defining generic instances reduces repetition when every
+-- instance will source the same function (the generic "==" function from Python,
+-- here). However, it also implies that ALL types are members, even though some
+-- things cannot be meaningfully equated. I need a better system.
 instance Eq a where
-    source Py from "root.py" ("morloc_eq" as eq)
+  -- this will work for any type that defines a '==' operator
+  source Py from "root.py" ("morloc_eq" as eq)
 
 instance Ord a where
+  -- this will work for any type that defines a '<=' operator
   source Py from "root.py" ("morloc_le" as le)
+
+instance Addable Int where
+  -- this will work for any type that defines a '+' operator
+  source Py from "root.py" ("morloc_add" as add)
+
+instance Addable Str where
+  source Py from "root.py" ("morloc_add" as add)
+
+instance Addable Real where
+  source Py from "root.py" ("morloc_add" as add)
+
+instance Foldable List where
+  -- this will apply to any object in Python that is iterable
+  source Py from "root.py" ("morloc_fold" as fold)
+
+instance Functor List where
+  source Py from "root.py" ("morloc_map_list" as map)
+
+instance Sequence List where
+  source Py from "root.py"
+    ( "morloc_at" as at
+    , "morloc_slice" as slice
+    )
