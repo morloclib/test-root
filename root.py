@@ -63,6 +63,9 @@ def morloc_isNothing(x):
 def morloc_add(x, y):
     return x + y
 
+def morloc_sub(x, y):
+    return x - y
+
 #  fold f a b :: (b -> a -> b) -> b -> f a -> b
 def morloc_fold(fbab, b, fa):
     for x in fa:

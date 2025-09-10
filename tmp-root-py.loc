@@ -42,6 +42,12 @@ instance Addable Str where
 instance Addable Real where
   source Py from "root.py" ("morloc_add" as add)
 
+instance Subtractable Int where
+  source Py from "root.py" ("morloc_sub" as sub)
+
+instance Subtractable Real where
+  source Py from "root.py" ("morloc_sub" as sub)
+
 instance Foldable List where
   -- this will apply to any object in Python that is iterable
   source Py from "root.py" ("morloc_fold" as fold)
