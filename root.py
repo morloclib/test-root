@@ -60,11 +60,32 @@ def morloc_fromJust(x):
 def morloc_isNothing(x):
     return x is None
 
+def morloc_neg(x):
+    return (-1) * x
+
 def morloc_add(x, y):
     return x + y
 
 def morloc_sub(x, y):
     return x - y
+
+def morloc_inv(x):
+    return 1 / x
+
+def morloc_mul(x, y):
+    return x * y
+
+def morloc_div(x, y):
+    return x / y
+
+def morloc_exp(x, y):
+    return x ** y
+
+def morloc_exp(x, y):
+    return x ** y
+
+def morloc_log(x, base):
+    return math.log(x, base)
 
 #  fold f a b :: (b -> a -> b) -> b -> f a -> b
 def morloc_fold(fbab, b, fa):

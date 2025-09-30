@@ -19,7 +19,6 @@ type Cpp => (Tuple5 a b c d e) = "std::tuple<$1,$2,$3,$4,$5>" a b c d e
 type Cpp => (Tuple6 a b c d e f) = "std::tuple<$1,$2,$3,$4,$5,$6>" a b c d e f
 type Cpp => (Tuple7 a b c d e f g) = "std::tuple<$1,$2,$3,$4,$5,$6,$7>" a b c d e f g
 type Cpp => (Tuple8 a b c d e f g h) = "std::tuple<$1,$2,$3,$4,$5,$6,$7,$8>" a b c d e f g h
--- type Cpp => (Maybe a) = "std::optional<$1>" a
 
 type Py => Filename = "str"
 type Py => Unit = "None"
@@ -36,7 +35,6 @@ type Py => (Tuple5 a b c d e) = "tuple[$1,$2,$3,$4,$5]" a b c d e
 type Py => (Tuple6 a b c d e f) = "tuple[$1,$2,$3,$4,$5,$6]" a b c d e f
 type Py => (Tuple7 a b c d e f g) = "tuple[$1,$2,$3,$4,$5,$6,$7]" a b c d e f g
 type Py => (Tuple8 a b c d e f g h) = "tuple[$1,$2,$3,$4,$5,$6,$7,$8]" a b c d e f g h
--- type Py => (Maybe a) = "$1|None" a -- Nothing is "None"
 
 type R => Filename = "character"
 type R => Unit = "NULL"
@@ -53,40 +51,6 @@ type R => (Tuple5 a b c d e) = "list" a b c d e
 type R => (Tuple6 a b c d e f) = "list" a b c d e f
 type R => (Tuple7 a b c d e f g) = "list" a b c d e f g
 type R => (Tuple8 a b c d e f g h) = "list" a b c d e f g h
--- type R => (Maybe a) = "$1" a
-
--- instance Packable [a] (Maybe a) where
---     pack = maybeToList
---     unpack = listToMaybe
---
--- nothing a :: Maybe a
--- just a :: a -> Maybe a
--- fromJust a :: Maybe a -> a -- unsafe, undefined for Nothing
--- isNothing a :: Maybe a -> Bool
---
--- catMaybes a :: [Maybe a] -> [a]
--- catMaybes = map fromMaybe . filter isJust
---
--- mapMaybes a b :: (a -> Maybe b) -> [a] -> [b]
--- mapMaybes f = filter isJust . map f
---
--- isJust a :: Maybe a -> Bool
--- isJust x = not (isNothing x)
---
--- fromMaybe a :: a -> Maybe a -> a
--- fromMaybe b x = ifelse (isNothing x) b (fromJust x)
---
--- maybe a b :: b -> (a -> b) -> Maybe a -> b
--- maybe b f x = ifelse (isNothing x) b (f (fromJust x))
---
--- fromMaybe a :: a -> Maybe a -> a
--- fromMaybe default x = ifelse (isNothing x) default x
---
--- maybeToList a :: Maybe a -> [a]
--- maybeToList x = ifelse (isNothing x) [] [fromJust x]
---
--- listToMaybe a :: [a] -> Maybe a
--- listToMaybe xs = ifelse (eq (length xs) 0) nothing (just (head xs))
 
 class Eq a where
   eq a :: a -> a -> Bool
@@ -109,11 +73,23 @@ greater x y = ifelse (lt x y) y x
 ne a :: a -> a -> Bool
 ne x y = not (eq x y)
 
-class Addable a where
-  add a :: a -> a -> a
+class Monoid a where
+  mempty a :: a
+  mappend a :: a -> a -> a
 
-class Subtractable a where
+class Integral a where
+  zero :: a
+  neg a :: a -> a
+  add a :: a -> a -> a
   sub a :: a -> a -> a
+
+class Numeric a where
+  one :: a
+  inv a :: a -> a
+  mul a :: a -> a -> a 
+  div a :: a -> a -> a 
+  exp a :: a -> a -> a
+  log a :: a -> a -> a
 
 class Foldable f where
   fold f a b :: (b -> a -> b) -> b -> f a -> b
@@ -125,20 +101,22 @@ length = fold (\b a -> add 1 b) 0
 class Functor f where
   map f a b :: (a -> b) -> f a -> f b
 
-class Bifunctor f where
-  bimap f a a' b b' :: (a -> a') -> (b -> b') -> f a b -> f a' b'
-  onA f a a' b :: (a -> a') -> f a b -> f a' b
-  onB f a b b' :: (b -> b') -> f a b -> f a b'
-
-instance Bifunctor Tuple2 where
-  bimap f g x = (f (fst x), g (snd x))
-  onA f x = (f (fst x), snd x)
-  onB g x = (fst x, g (snd x))
+-- class Bifunctor f where
+--   bimap f a a' b b' :: (a -> a') -> (b -> b') -> f a b -> f a' b'
+--   onA f a a' b :: (a -> a') -> f a b -> f a' b
+--   onB f a b b' :: (b -> b') -> f a b -> f a b'
+--
+-- instance Bifunctor Tuple2 where
+--   bimap f g x = (f (fst x), g (snd x))
+--   onA f x = (f (fst x), snd x)
+--   onB g x = (fst x, g (snd x))
 
 -- all sequences are Addable, Foldable, Filterable and Functors
 -- they additionally have a defined order and are isomorphic to lists
 -- unlike functors, they can be split
 class Sequence f where
+    empty f a :: f a
+
     -- at -1 [1,2,3] == FUCK!!!
     -- at 0  [1,2,3] == 1
     -- at 2  [1,2,3] == 3

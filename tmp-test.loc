@@ -1,6 +1,6 @@
 module tmp-test (*)
 
-import tmp-root-py (Int, Str, Tuple2, eq, fst)
+import tmp-root-py (Int, Str, Tuple2, fst, Eq)
 
 source Py from "tmp-test.py" ("testEqual", "printMsg", "printResult")
 
